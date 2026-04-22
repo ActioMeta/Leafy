@@ -8,12 +8,17 @@ import javax.inject.Inject
 class RecordCareActionUseCase @Inject constructor(
     private val gardenRepository: GardenRepository
 ) {
-    suspend operator fun invoke(plantId: Int, action: CareAction, timestamp: Long) {
+    suspend operator fun invoke(
+        plantId: Int,
+        action: CareAction,
+        timestamp: Long,
+        content: String? = null
+    ) {
         val log = CareLogEntity(
             plantId = plantId,
             actionType = action.name,
             timestamp = timestamp,
-            contentBlocks = "" // Simple for now
+            contentBlocks = content ?: ""
         )
         gardenRepository.addCareLog(log)
     }

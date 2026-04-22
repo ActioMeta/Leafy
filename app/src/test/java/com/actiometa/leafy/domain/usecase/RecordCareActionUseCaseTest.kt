@@ -29,4 +29,23 @@ class RecordCareActionUseCaseTest {
             }) 
         }
     }
+
+    @Test
+    fun `when recording a note with content, it should be saved in contentBlocks`() = runTest {
+        // Arrange
+        val plantId = 1
+        val action = CareAction.NOTE
+        val timestamp = 123456789L
+        val noteContent = "Looking healthy today"
+
+        // Act
+        useCase(plantId, action, timestamp, noteContent)
+
+        // Assert
+        coVerify { 
+            repository.addCareLog(match { 
+                it.plantId == plantId && it.actionType == "NOTE" && it.contentBlocks == noteContent 
+            }) 
+        }
+    }
 }

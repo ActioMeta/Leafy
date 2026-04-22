@@ -1,4 +1,4 @@
-# Diseño Técnico - Leafy 🌿
+# Diseño Técnico - Leafy
 
 Este documento complementa el `plan.md` con las definiciones técnicas necesarias para iniciar el desarrollo.
 
@@ -15,7 +15,7 @@ Este documento complementa el `plan.md` con las definiciones técnicas necesaria
 
 ---
 
-## 📂 Estructura de Proyecto (Clean Architecture)
+## Estructura de Proyecto (Clean Architecture)
 
 El proyecto seguirá una estructura de paquetes basada en capas:
 
@@ -51,7 +51,7 @@ com.actiometa.leafy/
 
 ---
 
-## 🎨 Guía de Estilo Visual (Material 3)
+## Guía de Estilo Visual (Material 3)
 
 *   **Paleta de Colores:** Dominante Verde Esmeralda (`#2E7D32`) para la naturaleza, con acentos en Terracota (`#A1887F`) para representar la tierra/macetas.
 *   **Tipografía:** `Roboto` para legibilidad y `Montserrat` (o similar) para encabezados botánicos.
