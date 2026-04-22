@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">Leafy</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_title">Bienvenido a Leafy</string>
+    <string name="onboarding_subtitle">Configura tu espacio para empezar a cuidar tus plantas.</string>
+    <string name="setup_api_keys">Configuración de API Keys</string>
+    <string name="plantnet_key_label">API Key de Pl@ntNet</string>
+    <string name="perenual_key_label">API Key de Perenual</string>
+    <string name="openweather_key_label">API Key de OpenWeather</string>
+    <string name="save_and_continue">Guardar y Continuar</string>
+    <string name="skip_onboarding">Omitir</string>
+    
+    <!-- Garden -->
+    <string name="my_garden">Mi Jardín</string>
+    <string name="no_plants_yet">Aún no hay plantas en tu jardín.</string>
+    <string name="add_plant">Añadir Planta</string>
+    
+    <!-- Scanner -->
+    <string name="identify_plant">Identificar Planta</string>
+    <string name="scanning">Escaneando...</string>
+    <string name="camera_permission_denied">Se requiere permiso de cámara para identificar plantas.</string>
+    <string name="request_permission">Otorgar Permiso</string>
+    <string name="capture_photo">Capturar Foto</string>
+    <string name="flash_on">Flash Encendido</string>
+    <string name="flash_off">Flash Apagado</string>
+    <string name="select_from_gallery">Elegir de Galería</string>
+    <string name="identification_success">¡Planta Identificada!</string>
+    <string name="add_to_garden_btn">Añadir al Jardín</string>
+    <string name="plant_nickname_label">Apodo de la Planta</string>
+    <string name="scientific_name">Nombre Científico: %1$s</string>
+    <string name="common_name">Nombre Común: %1$s</string>
+    <string name="try_again">Intentar de nuevo</string>
+    <string name="part_to_scan">Parte a escanear: %1$s</string>
+    
+    <!-- Organs -->
+    <string name="organ_leaf">Hoja</string>
+    <string name="organ_flower">Flor</string>
+    <string name="organ_fruit">Fruto</string>
+    <string name="organ_bark">Corteza</string>
+    
+    <!-- Plant Details -->
+    <string name="plant_info">Información de la Planta</string>
+    <string name="watering_label">Riego</string>
+    <string name="sunlight_label">Luz Solar</string>
+    <string name="species_id_label">ID de Especie</string>
+    <string name="watering_every_days">Cada %1$d días</string>
+    <string name="register_watering_btn">Registrar Riego</string>
+    <string name="already_watered">Ya regada hoy</string>
+    <string name="propagation_label">Propagación</string>
+    <string name="pruning_label">Meses de Poda</string>
+    <string name="poisonous_label">Tóxica</string>
+    <string name="pets_label">Mascotas</string>
+    <string name="humans_label">Humanos</string>
+    <string name="indoor_label">Interior</string>
+    <string name="care_guides_label">Guía de Cuidados</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="maintenance_label">Mantenimiento</string>
+    <string name="growth_rate_label">Crecimiento</string>
+    <string name="cycle_label">Ciclo</string>
+    <string name="care_logs_title">Historial de Cuidados</string>
+    <string name="no_logs_yet">Aún no hay registros de cuidados.</string>
+    
+    <!-- Care Status -->
+    <string name="status_needs_water">Necesita Agua</string>
+    <string name="status_hydrated">Hidratada</string>
+    <string name="desc_needs_water">Es hora de regar tu planta</string>
+    <string name="desc_hydrated">Todo bien por hoy</string>
+    <string name="rain_predicted">Lluvia prevista</string>
+    <string name="perfect_conditions">Condiciones perfectas</string>
+    <string name="watering_paused">Riego pausado automáticamente</string>
+    <string name="check_back_days">Vuelve en %1$d días</string>
+    
+    <!-- Common -->
+    <string name="needs_water">Necesita agua</string>
+    <string name="watered">Regada</string>
+    <string name="last_watered">Último: %1$s</string>
+    <string name="loading">Cargando...</string>
+    <string name="error_occurred">Ha ocurrido un error</string>
+    <string name="invalid_plantnet_key">API Key de Pl@ntNet inválida</string>
+    <string name="invalid_perenual_key">API Key de Perenual inválida</string>
+    <string name="invalid_openweather_key">API Key de OpenWeather inválida</string>
+    <string name="validating_keys">Validando llaves...</string>
+    <string name="back">Atrás</string>
+
+    <!-- Settings & Weather Config -->
+    <string name="settings">Ajustes</string>
+    <string name="weather_alerts_title">Alertas Climáticas</string>
+    <string name="enable_weather_alerts">Activar alertas de lluvia</string>
+    <string name="weather_alerts_desc">Te avisaremos para pausar el riego si se prevé lluvia.</string>
+    <string name="location_config_title">Ubicación</string>
+    <string name="city_manual_label">Nombre de la Ciudad (Recomendado)</string>
+    <string name="city_manual_hint">Ej: Madrid, ES</string>
+    <string name="use_gps_btn">Usar Mi Ubicación Actual (GPS)</string>
+    <string name="gps_not_available">Ubicación GPS no disponible</string>
+    <string name="location_saved">Ajustes de ubicación guardados</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Alertas Climáticas</string>
+    <string name="notification_channel_desc">Alertas para pausar el riego cuando se prevé lluvia.</string>
+    <string name="notification_rain_title">¡Va a llover hoy! 🌧️</string>
+    <string name="notification_rain_desc">Te sugerimos pausar el riego para ahorrar agua y evitar el exceso de humedad.</string>
+</resources>

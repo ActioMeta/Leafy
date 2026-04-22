@@ -1,0 +1,46 @@
+# Android/IntelliJ/Kotlin .gitignore
+
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Relates to the signing or API keys
+*.jks
+*.keystore
+google-services.json
+
+# Log files
+*.log
+
+# Android Studio Navigation Editor temp files
+.navigation/
+
+# Android Studio captures
+/captures/
+
+# IntelliJ
+*.ipr
+*.iws
+.idea/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services
+google-services.json
+
+# Secrets Gradle Plugin (para BYOK y API Keys locales en desarrollo)
+secrets.properties
