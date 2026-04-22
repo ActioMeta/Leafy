@@ -4,8 +4,8 @@ import com.actiometa.leafy.data.remote.dto.PerenualSpeciesDetailDto
 import com.actiometa.leafy.data.remote.dto.PlantNetProjectDto
 import com.actiometa.leafy.data.remote.dto.PlantNetResponseDto
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.http.*
 
 interface BotanyApi {

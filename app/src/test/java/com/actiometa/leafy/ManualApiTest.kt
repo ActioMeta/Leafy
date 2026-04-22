@@ -1,6 +1,8 @@
 package com.actiometa.leafy
 
+import com.actiometa.leafy.data.remote.dto.PlantNetProjectDto
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.junit.Test
@@ -11,10 +13,12 @@ import org.junit.Test
  */
 class ManualApiTest {
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     @Test
     fun testPlantNetApiKey() {
-        // PON TU API KEY AQUÍ PARA PROBAR
-        val apiKey = "2b10RaCBRdhsySoikwmr04" 
+        // PON TU API KEY AQUÍ PARA PROBAR - FORCING RE-EXECUTION
+        val apiKey = "" 
         
         if (apiKey.isEmpty()) {
             println("Error: Debes poner tu API Key en la variable 'apiKey' del test.")
@@ -31,19 +35,21 @@ class ManualApiTest {
         runBlocking {
             try {
                 val response = client.newCall(request).execute()
+                val bodyString = response.body?.string() ?: ""
+                
                 println("--- RESULTADO DE LA PRUEBA ---")
-                println("URL probada: https://my-api.plantnet.org/v2/projects?api-key=***")
                 println("Código HTTP: ${response.code}")
-                println("Mensaje: ${response.message}")
-                println("Cuerpo: ${response.body?.string()}")
                 
                 if (response.isSuccessful) {
-                    println("La API Key es VÁLIDA.")
+                    val projects: List<PlantNetProjectDto> = json.decodeFromString(bodyString)
+                    println("✅ La API Key es VÁLIDA.")
+                    println("✅ Serialización exitosa. Proyectos encontrados: ${projects.size}")
+                    println("Ejemplo: ${projects.firstOrNull()?.title}")
                 } else {
-                    println("La API Key es INVÁLIDA o el servidor la rechazó.")
+                    println("❌ Error: ${response.code} - $bodyString")
                 }
             } catch (e: Exception) {
-                println("Error de red: ${e.message}")
+                println("❌ Error: ${e.message}")
             }
         }
     }

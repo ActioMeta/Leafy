@@ -5,5 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlantNetProjectDto(
     val id: String,
-    val name: String
+    val title: String,
+    val description: String? = null,
+    val speciesCount: Int? = null
 )

@@ -1,5 +1,6 @@
 package com.actiometa.leafy.data.repository
 
+import android.util.Log
 import com.actiometa.leafy.data.remote.api.BotanyApi
 import com.actiometa.leafy.domain.model.IdentificationResult
 import com.actiometa.leafy.domain.model.PlantDetails
@@ -24,17 +25,29 @@ class BotanyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun validatePlantNetKey(apiKey: String): Result<Boolean> = runCatching {
-        botanyApi.listProjects(apiKey)
-        true
+        val cleanKey = apiKey.trim()
+        try {
+            botanyApi.listProjects(cleanKey)
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "PlantNet validation failed: ${e.message}", e)
+            throw e
+        }
     }
 
     override suspend fun validatePerenualKey(apiKey: String): Result<Boolean> = runCatching {
-        botanyApi.searchSpecies(
-            url = "$PERENUAL_BASE_URL/species-list",
-            scientificName = "Rosa",
-            apiKey = apiKey
-        )
-        true
+        val cleanKey = apiKey.trim()
+        try {
+            botanyApi.searchSpecies(
+                url = "$PERENUAL_BASE_URL/species-list",
+                scientificName = "Rosa",
+                apiKey = cleanKey
+            )
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Perenual validation failed: ${e.message}", e)
+            throw e
+        }
     }
 
     override suspend fun identifyPlant(
