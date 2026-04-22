@@ -20,12 +20,8 @@ interface GardenDao {
     suspend fun getSpeciesById(speciesId: String): SpeciesEntity?
 
     @Transaction
-    @Query("""
-        SELECT * FROM plants 
-        LEFT JOIN species ON plants.speciesId = species.speciesId 
-        WHERE plants.isActive = 1
-    """)
-    fun getPlantsWithSpecies(): Flow<Map<PlantEntity, SpeciesEntity?>>
+    @Query("SELECT * FROM plants WHERE isActive = 1")
+    fun getPlantsWithSpecies(): Flow<List<com.actiometa.leafy.data.local.entities.PlantWithSpecies>>
 
     @Query("""
         SELECT MAX(timestamp) FROM care_logs 

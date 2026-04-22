@@ -43,11 +43,12 @@ class PlantDetailsViewModel @Inject constructor(
     private fun loadPlantDetails() {
         viewModelScope.launch {
             // Buscamos la planta y combinamos con su último riego
-            gardenRepository.getGardenPlants().flatMapLatest { plantMap ->
-                val entry = plantMap.entries.find { it.key.plantId == plantId }
-                if (entry == null) return@flatMapLatest flowOf(null)
+            gardenRepository.getGardenPlants().flatMapLatest { plantList ->
+                val relation = plantList.find { it.plant.plantId == plantId }
+                if (relation == null) return@flatMapLatest flowOf(null)
                 
-                val (plant, species) = entry
+                val plant = relation.plant
+                val species = relation.species
                 gardenRepository.getLastWateringForPlant(plantId).map { lastWatering ->
                     val frequency = species?.wateringFrequencyDays ?: 7
                     val nextWatering = if (lastWatering != null) lastWatering + (frequency * 24 * 60 * 60 * 1000L) else 0L

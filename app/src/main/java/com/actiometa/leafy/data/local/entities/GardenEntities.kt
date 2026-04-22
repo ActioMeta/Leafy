@@ -1,9 +1,6 @@
 package com.actiometa.leafy.data.local.entities
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -46,4 +43,13 @@ data class PlantEntity(
     val imagePath: String? = null,
     val transplantDate: Long,
     val isActive: Boolean = true
+)
+
+data class PlantWithSpecies(
+    @Embedded val plant: PlantEntity,
+    @Relation(
+        parentColumn = "speciesId",
+        entityColumn = "speciesId"
+    )
+    val species: SpeciesEntity?
 )

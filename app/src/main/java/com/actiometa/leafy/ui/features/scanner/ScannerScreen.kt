@@ -99,20 +99,38 @@ fun ScannerScreen(
         Box(modifier = Modifier.padding(padding)) {
             if (hasCameraPermission) {
                 when (val state = uiState) {
-                    is ScannerUiState.Idle -> {
-                        CameraView(
-                            selectedOrgan = selectedOrgan,
-                            onOrganSelected = { viewModel.setOrgan(it) },
-                            onImageCaptured = { file -> 
-                                val permanentPath = FileUtils.saveImageToInternalStorage(context, file)
-                                viewModel.identifyPlant(File(permanentPath)) 
-                            },
-                            onGalleryClick = { galleryLauncher.launch("image/*") },
-                            onError = { /* Handle camera error */ }
-                        )
-                    }
-                    is ScannerUiState.Scanning -> {
-                        // ... (sin cambios)
+                    is ScannerUiState.Idle, is ScannerUiState.Scanning -> {
+                        Box {
+                            CameraView(
+                                selectedOrgan = selectedOrgan,
+                                onOrganSelected = { viewModel.setOrgan(it) },
+                                onImageCaptured = { file -> 
+                                    val permanentPath = FileUtils.saveImageToInternalStorage(context, file)
+                                    viewModel.identifyPlant(File(permanentPath)) 
+                                },
+                                onGalleryClick = { galleryLauncher.launch("image/*") },
+                                onError = { /* Handle camera error */ }
+                            )
+                            
+                            if (state is ScannerUiState.Scanning) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black.copy(alpha = 0.5f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = stringResource(R.string.analyzing_plant),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                     is ScannerUiState.Success -> {
                         ResultView(
@@ -241,16 +259,18 @@ fun CameraView(
                         "bark" -> stringResource(R.string.organ_bark)
                         else -> organ
                     }
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
-                            .clickable { onOrganSelected(organ) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    
+                    Surface(
+                        selected = isSelected,
+                        onClick = { onOrganSelected(organ) },
+                        shape = CircleShape,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.White,
+                        modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         Text(
-                            label,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.White,
+                            text = label,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }

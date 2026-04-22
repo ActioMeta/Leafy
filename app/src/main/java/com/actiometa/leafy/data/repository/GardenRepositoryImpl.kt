@@ -6,6 +6,7 @@ import com.actiometa.leafy.data.local.entities.CareLogEntity
 import com.actiometa.leafy.data.local.entities.PlantEntity
 import com.actiometa.leafy.data.local.entities.PlantImageEntity
 import com.actiometa.leafy.data.local.entities.SpeciesEntity
+import com.actiometa.leafy.data.local.entities.PlantWithSpecies
 import com.actiometa.leafy.domain.repository.GardenRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class GardenRepositoryImpl @Inject constructor(
     private val logDao: LogDao
 ) : GardenRepository {
 
-    override fun getGardenPlants(): Flow<Map<PlantEntity, SpeciesEntity?>> =
+    override fun getGardenPlants(): Flow<List<PlantWithSpecies>> =
         gardenDao.getPlantsWithSpecies()
 
     override suspend fun addPlantToGarden(plant: PlantEntity, species: SpeciesEntity) {

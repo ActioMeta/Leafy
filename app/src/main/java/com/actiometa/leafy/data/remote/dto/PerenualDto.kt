@@ -15,6 +15,8 @@ data class PerenualSpeciesDetailDto(
     @SerialName("maintenance") val maintenance: String? = null,
     @SerialName("care_level") val careLevel: String? = null,
     @SerialName("growth_rate") val growthRate: String? = null,
+    @SerialName("edible_fruit") val edibleFruit: Int? = null,
+    @SerialName("edible_leaf") val edibleLeaf: Int? = null,
     val edible: Boolean? = null,
     val description: String? = null,
     @SerialName("watering_general_benchmark") val wateringBenchmark: WateringBenchmarkDto? = null,
@@ -22,7 +24,7 @@ data class PerenualSpeciesDetailDto(
     @SerialName("pruning_month") val pruningMonth: List<String> = emptyList(),
     @SerialName("poisonous_to_humans") val poisonousToHumans: Int? = null,
     @SerialName("poisonous_to_pets") val poisonousToPets: Int? = null,
-    @SerialName("indoor") val indoor: Boolean? = null,
+    @SerialName("indoor") val indoor: Int? = null,
     @SerialName("care_guides") val careGuides: String? = null,
     @SerialName("default_image") val defaultImage: PerenualImageDto? = null
 )

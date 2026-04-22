@@ -1,0 +1,30 @@
+### Configuración de Variables
+@plantnet_key = 2b10RaCBRdhsySoikwmr04
+@perenual_key = sk-LXtc69e651434242116593
+
+### 1. Pl@ntNet: Listar Proyectos (Validación)
+GET https://my-api.plantnet.org/v2/projects?api-key={{plantnet_key}}
+
+### 2. Pl@ntNet: Identificar Planta
+# Nota: Para probar identificación real en REST Client necesitas enviar un Multipart
+# Este es un ejemplo de la estructura
+POST https://my-api.plantnet.org/v2/identify/all?api-key={{plantnet_key}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="organs"
+
+leaf
+--boundary
+Content-Disposition: form-data; name="images"; filename="planta.jpg"
+Content-Type: image/jpeg
+
+< ./ruta/a/tu/imagen.jpg
+--boundary--
+
+### 3. Perenual: Buscar Especie por Nombre
+GET https://perenual.com/api/v2/species-list?key={{perenual_key}}&q=Rosa
+
+### 4. Perenual: Obtener Detalles de Especie
+# Reemplaza {id} con el ID obtenido en la búsqueda anterior
+GET https://perenual.com/api/v2/species/details/1?key={{perenual_key}}

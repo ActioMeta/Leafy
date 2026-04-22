@@ -29,6 +29,7 @@ class AddPlantToGardenUseCase @Inject constructor(
         )
 
         val plantEntity = PlantEntity(
+            plantId = 0, // 0 triggers autogenerate in Room
             speciesId = details.speciesId,
             nickname = nickname,
             imagePath = details.imagePath,

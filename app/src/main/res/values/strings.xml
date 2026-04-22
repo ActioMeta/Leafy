@@ -19,6 +19,7 @@
     <!-- Scanner -->
     <string name="identify_plant">Identify Plant</string>
     <string name="scanning">Scanning...</string>
+    <string name="analyzing_plant">Analyzing plant...</string>
     <string name="camera_permission_denied">Camera permission is required to identify plants.</string>
     <string name="request_permission">Grant Permission</string>
     <string name="capture_photo">Capture Photo</string>

@@ -50,5 +50,6 @@ data class PerenualSearchResponseDto(
 data class PerenualBasicInfoDto(
     val id: Int,
     @SerialName("common_name") val commonName: String?,
-    @SerialName("scientific_name") val scientificName: List<String>
+    @SerialName("scientific_name") val scientificName: List<String>,
+    @SerialName("default_image") val defaultImage: com.actiometa.leafy.data.remote.dto.PerenualImageDto? = null
 )

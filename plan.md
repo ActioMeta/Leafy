@@ -254,7 +254,13 @@ La interfaz de usuario evitará solicitar permisos de sistema (`ACCESS_COARSE_LO
 
 ### Fase 4: Siguiente Prioridad (Timeline y Refactorización)
 - [ ] **Timeline Fotográfico:** Implementar el slider de comparación "Antes y Después" y galería cronológica.
-- [ ] **Optimización Scanner:** Migrar `LocalLifecycleOwner` a `androidx.lifecycle.compose`.
-- [ ] **Care Logs Avanzados:** Registro visual de acciones específicas (Poda, Fertilización).
+- [x] **Optimización Scanner:** Migrar `LocalLifecycleOwner` a `androidx.lifecycle.compose`, añadir selector de órganos y overlay de carga.
+- [x] **Infraestructura Care Logs:** Implementación de `RecordCareActionUseCase` con soporte JSON y enum de acciones.
+- [ ] **Timeline Fotográfico:** Galería cronológica y slider antes/después.
 - [ ] **Exportación/Importación:** Funcionalidad de backup en JSON.
+
+### 🛠️ Correcciones Técnicas Realizadas
+- **Base de Datos:** Migración a `PlantWithSpecies` para evitar colisiones de ID y pérdida de datos.
+- **Red:** Corrección de DTOs y URLs para Pl@ntNet y Perenual (Mapeo de Int a Boolean y estimación de riego).
+- **UI:** Implementación de `enableEdgeToEdge` para integración total de la barra de estado.
 

@@ -4,11 +4,12 @@ import com.actiometa.leafy.data.local.entities.PlantEntity
 import com.actiometa.leafy.data.local.entities.SpeciesEntity
 import com.actiometa.leafy.data.local.entities.CareLogEntity
 import com.actiometa.leafy.data.local.entities.PlantImageEntity
+import com.actiometa.leafy.data.local.entities.PlantWithSpecies
 import kotlinx.coroutines.flow.Flow
 
 interface GardenRepository {
     // Plant & Species Management
-    fun getGardenPlants(): Flow<Map<PlantEntity, SpeciesEntity?>>
+    fun getGardenPlants(): Flow<List<PlantWithSpecies>>
     suspend fun addPlantToGarden(plant: PlantEntity, species: SpeciesEntity)
     suspend fun removePlant(plant: PlantEntity)
     suspend fun getSpecies(speciesId: String): SpeciesEntity?

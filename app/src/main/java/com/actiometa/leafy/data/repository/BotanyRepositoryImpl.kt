@@ -121,29 +121,42 @@ class BotanyRepositoryImpl @Inject constructor(
 
         if (speciesBasicInfo == null) throw Exception("Species not found in Perenual")
 
-        // Obtener detalles completos
-        val details = botanyApi.getSpeciesDetails(
-            url = "$PERENUAL_BASE_URL/species/details/${speciesBasicInfo.id}",
-            apiKey = apiKey
-        )
+        // Obtener detalles completos (intentar, pero con fallback a la info básica)
+        val details = try {
+            botanyApi.getSpeciesDetails(
+                url = "$PERENUAL_BASE_URL/species/details/${speciesBasicInfo.id}",
+                apiKey = apiKey
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching Perenual details for ID ${speciesBasicInfo.id}: ${e.message}")
+            null
+        }
+
+        val estimatedWatering = when (details?.watering?.lowercase()) {
+            "frequent" -> 3
+            "average" -> 7
+            "minimum" -> 14
+            "none" -> 30
+            else -> 7
+        }
 
         PlantDetails(
-            speciesId = details.id.toString(),
+            speciesId = speciesBasicInfo.id.toString(),
             scientificName = scientificName,
-            commonName = details.commonName ?: commonName ?: scientificName,
-            wateringFrequencyDays = details.wateringBenchmark?.value?.toIntOrNull() ?: 7,
-            sunlight = details.sunlight.joinToString(", "),
-            cycle = details.cycle,
-            maintenance = details.maintenance ?: details.careLevel,
-            growthRate = details.growthRate,
-            description = details.description,
-            edible = details.edible,
-            propagation = details.propagation.joinToString(", "),
-            pruningMonths = details.pruningMonth.joinToString(", "),
-            isPoisonousToHumans = (details.poisonousToHumans ?: 0) > 0,
-            isPoisonousToPets = (details.poisonousToPets ?: 0) > 0,
-            isIndoor = details.indoor ?: false,
-            imagePath = details.defaultImage?.regularUrl
+            commonName = details?.commonName?.ifBlank { null } ?: speciesBasicInfo.commonName ?: scientificName,
+            wateringFrequencyDays = details?.wateringBenchmark?.value?.toIntOrNull() ?: estimatedWatering,
+            sunlight = details?.sunlight?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Unknown" } ?: "Unknown",
+            cycle = details?.cycle?.ifBlank { "Unknown" } ?: "Unknown",
+            maintenance = details?.maintenance?.ifBlank { null } ?: details?.careLevel?.ifBlank { "Unknown" } ?: "Unknown",
+            growthRate = details?.growthRate?.ifBlank { "Unknown" } ?: "Unknown",
+            description = details?.description?.ifBlank { null },
+            edible = details?.edible ?: false,
+            propagation = details?.propagation?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Not specified" } ?: "Not specified",
+            pruningMonths = details?.pruningMonth?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Not specified" } ?: "Not specified",
+            isPoisonousToHumans = (details?.poisonousToHumans ?: 0) > 0,
+            isPoisonousToPets = (details?.poisonousToPets ?: 0) > 0,
+            isIndoor = (details?.indoor ?: 0) > 0,
+            imagePath = details?.defaultImage?.regularUrl ?: speciesBasicInfo.defaultImage?.regularUrl
         )
     }
 }

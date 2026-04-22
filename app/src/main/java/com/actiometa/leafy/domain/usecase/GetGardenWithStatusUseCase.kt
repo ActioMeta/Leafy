@@ -33,10 +33,12 @@ class GetGardenWithStatusUseCase @Inject constructor(
     private val gardenRepository: GardenRepository
 ) {
     operator fun invoke(): Flow<List<GardenPlant>> {
-        return gardenRepository.getGardenPlants().flatMapLatest { plantMap ->
-            if (plantMap.isEmpty()) return@flatMapLatest flowOf(emptyList())
+        return gardenRepository.getGardenPlants().flatMapLatest { plantList ->
+            if (plantList.isEmpty()) return@flatMapLatest flowOf(emptyList())
             
-            val plantFlows = plantMap.map { (plant, species) ->
+            val plantFlows = plantList.map { relation ->
+                val plant = relation.plant
+                val species = relation.species
                 gardenRepository.getLastWateringForPlant(plant.plantId).map { lastWatering ->
                     val wateringDays = species?.wateringFrequencyDays ?: 7
                     val needsWater = checkNeedsWater(lastWatering, wateringDays)
