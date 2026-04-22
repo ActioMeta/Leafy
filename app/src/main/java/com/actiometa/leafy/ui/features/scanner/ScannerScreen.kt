@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.actiometa.leafy.R
 import com.actiometa.leafy.core.util.FileUtils
@@ -355,22 +355,22 @@ fun ScannerOverlay() {
         // Top Left
         drawPath(Path().apply {
             moveTo(left, top + cornerSize); lineTo(left, top + 16.dp.toPx())
-            quadraticBezierTo(left, top, left + 16.dp.toPx(), top); lineTo(left + cornerSize, top)
+            quadraticTo(left, top, left + 16.dp.toPx(), top); lineTo(left + cornerSize, top)
         }, color, style = Stroke(strokeWidth))
         // Top Right
         drawPath(Path().apply {
             moveTo(left + boxSize - cornerSize, top); lineTo(left + boxSize - 16.dp.toPx(), top)
-            quadraticBezierTo(left + boxSize, top, left + boxSize, top + 16.dp.toPx()); lineTo(left + boxSize, top + cornerSize)
+            quadraticTo(left + boxSize, top, left + boxSize, top + 16.dp.toPx()); lineTo(left + boxSize, top + cornerSize)
         }, color, style = Stroke(strokeWidth))
         // Bottom Left
         drawPath(Path().apply {
             moveTo(left, top + boxSize - cornerSize); lineTo(left, top + boxSize - 16.dp.toPx())
-            quadraticBezierTo(left, top + boxSize, left + 16.dp.toPx(), top + boxSize); lineTo(left + cornerSize, top + boxSize)
+            quadraticTo(left, top + boxSize, left + 16.dp.toPx(), top + boxSize); lineTo(left + cornerSize, top + boxSize)
         }, color, style = Stroke(strokeWidth))
         // Bottom Right
         drawPath(Path().apply {
             moveTo(left + boxSize - cornerSize, top + boxSize); lineTo(left + boxSize - 16.dp.toPx(), top + boxSize)
-            quadraticBezierTo(left + boxSize, top + boxSize, left + boxSize, top + boxSize - 16.dp.toPx()); lineTo(left + boxSize, top + boxSize - cornerSize)
+            quadraticTo(left + boxSize, top + boxSize, left + boxSize, top + boxSize - 16.dp.toPx()); lineTo(left + boxSize, top + boxSize - cornerSize)
         }, color, style = Stroke(strokeWidth))
     }
 }
