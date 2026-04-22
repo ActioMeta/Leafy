@@ -62,7 +62,7 @@ com.actiometa.leafy/
 
 ---
 
-## 🛡️ Manejo de Errores y Estados de UI
+## Manejo de Errores y Estados de UI
 
 Se utilizará una clase sellada (`Sealed Class`) para representar el estado de la UI en los ViewModels:
 
@@ -77,7 +77,7 @@ sealed class UiState<out T> {
 
 ---
 
-## 🚀 Próximos Pasos (Fase 0)
+## Próximos Pasos (Fase 0)
 
 1.  Configurar `build.gradle.kts` con las dependencias mencionadas.
 2.  Implementar `SettingsRepository` con DataStore para el flujo de Onboarding.

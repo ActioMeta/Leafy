@@ -31,7 +31,7 @@ class RecordCareActionUseCaseTest {
     }
 
     @Test
-    fun `when recording a note with content, it should be saved in contentBlocks`() = runTest {
+    fun `when recording a note with content, it should be saved as JSON in contentBlocks`() = runTest {
         // Arrange
         val plantId = 1
         val action = CareAction.NOTE
@@ -44,7 +44,9 @@ class RecordCareActionUseCaseTest {
         // Assert
         coVerify { 
             repository.addCareLog(match { 
-                it.plantId == plantId && it.actionType == "NOTE" && it.contentBlocks == noteContent 
+                it.plantId == plantId && 
+                it.actionType == "NOTE" && 
+                it.contentBlocks.contains("\"text\":\"$noteContent\"") 
             }) 
         }
     }

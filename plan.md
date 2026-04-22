@@ -124,7 +124,7 @@ sealed class WeatherCheckResult {
 
 ---
 
-## ⚙️ Fase 2: Arquitectura de Background (WorkManager)
+## Fase 2: Arquitectura de Background (WorkManager)
 
 Para evitar drenar la batería, la aplicación **no** consultará el clima mientras el usuario navega por ella. 
 
@@ -140,7 +140,7 @@ Para evitar drenar la batería, la aplicación **no** consultará el clima mient
 
 ---
 
-## 🧪 Fase 3: Plan de Implementación TDD
+## Fase 3: Plan de Implementación TDD
 
 ### Paso 1: TDD para el Caso de Uso de Clima (Lógica Pura)
 Verificar que la orquestación entre clima y base de datos funciona sin invocar a Android.
@@ -217,7 +217,7 @@ fun `Cuando isOnboardingCompleted es falso, la ruta inicial es SetupScreen`() = 
 
 ---
 
-## 🎨 Fase 4: Diseño UX/UI (Compose & Material Design 3)
+## Fase 4: Diseño UX/UI (Compose & Material Design 3)
 
 ### Pantalla de Ajustes: Componente de Privacidad Climática
 La interfaz de usuario evitará solicitar permisos de sistema (`ACCESS_COARSE_LOCATION`) a menos que el usuario lo exija explícitamente.
@@ -230,9 +230,9 @@ La interfaz de usuario evitará solicitar permisos de sistema (`ACCESS_COARSE_LO
 
 ---
 
-## 📈 Estado de Avance (Actualizado: 21 de Abril, 2026)
+## Estado de Avance (Actualizado: 21 de Abril, 2026)
 
-### ✅ Fase 1: Completada
+### Fase 1: Completada
 - [x] **Onboarding BYOK:** Validación y guardado de API Keys (Pl@ntNet, Perenual, OpenWeather).
 - [x] **Arquitectura Base:** Clean Architecture + MVVM + Hilt + Room + DataStore.
 - [x] **Escáner (Identificación):** Integración de CameraX. Identificación orquestada entre Pl@ntNet y Perenual.
@@ -241,18 +241,18 @@ La interfaz de usuario evitará solicitar permisos de sistema (`ACCESS_COARSE_LO
 - [x] **Lógica de Estado:** Cálculo dinámico de necesidad de riego basado en frecuencia de especie y último log.
 - [x] **Traducciones Base:** Archivos `strings.xml` (EN/ES) sincronizados con las funciones actuales.
 
-### ✅ Fase 2: Completada (Alertas Climáticas)
+### Fase 2: Completada (Alertas Climáticas)
 - [x] **LocationRepository:** Lógica híbrida para ubicación (Ciudad manual / GPS).
 - [x] **WeatherWorker:** Proceso en segundo plano con WorkManager (24h) y notificaciones de lluvia.
 - [x] **Configuración de Ubicación:** Implementada `SettingsScreen` con control de privacidad y GPS.
 - [x] **Notificaciones:** Configuración de canales y alertas push locales.
 
-### ✅ Fase 3: Completada (Detalle y Care Logs Base)
+### Fase 3: Completada (Detalle y Care Logs Base)
 - [x] **Detalle de Planta Enriquecido:** Pantalla con información completa de la API (toxicidad, poda, propagación, interiores).
 - [x] **Integración de Clima en Tiempo Real:** El detalle de la planta muestra el pronóstico basado en la ubicación configurada.
 - [x] **Persistencia Extendida:** Actualización de Room para guardar atributos botánicos avanzados.
 
-### ⏳ Fase 4: Siguiente Prioridad (Timeline y Refactorización)
+### Fase 4: Siguiente Prioridad (Timeline y Refactorización)
 - [ ] **Timeline Fotográfico:** Implementar el slider de comparación "Antes y Después" y galería cronológica.
 - [ ] **Optimización Scanner:** Migrar `LocalLifecycleOwner` a `androidx.lifecycle.compose`.
 - [ ] **Care Logs Avanzados:** Registro visual de acciones específicas (Poda, Fertilización).

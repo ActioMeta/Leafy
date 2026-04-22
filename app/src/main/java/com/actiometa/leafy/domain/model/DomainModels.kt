@@ -1,5 +1,7 @@
 package com.actiometa.leafy.domain.model
 
+import kotlinx.serialization.Serializable
+
 data class IdentificationResult(
     val scientificName: String,
     val commonName: String?,
@@ -43,3 +45,9 @@ enum class CareAction {
     CLEAN_LEAVES,
     NOTE
 }
+
+@Serializable
+data class CareLogContent(
+    val text: String? = null,
+    val imageUrls: List<String> = emptyList()
+)
