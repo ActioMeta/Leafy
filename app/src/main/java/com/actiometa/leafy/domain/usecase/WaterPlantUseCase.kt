@@ -1,19 +1,17 @@
 package com.actiometa.leafy.domain.usecase
 
-import com.actiometa.leafy.data.local.entities.CareLogEntity
-import com.actiometa.leafy.domain.repository.GardenRepository
+import com.actiometa.leafy.domain.model.CareAction
 import javax.inject.Inject
 
 class WaterPlantUseCase @Inject constructor(
-    private val gardenRepository: GardenRepository
+    private val recordCareActionUseCase: RecordCareActionUseCase
 ) {
     suspend operator fun invoke(plantId: Int): Result<Unit> = runCatching {
-        val log = CareLogEntity(
+        recordCareActionUseCase(
             plantId = plantId,
-            actionType = "WATER",
+            action = CareAction.WATER,
             timestamp = System.currentTimeMillis(),
-            contentBlocks = "Quick water action"
+            content = "Quick water action"
         )
-        gardenRepository.addCareLog(log)
     }
 }
