@@ -44,3 +44,4 @@ google-services.json
 
 # Secrets Gradle Plugin (para BYOK y API Keys locales en desarrollo)
 secrets.properties
+keys
