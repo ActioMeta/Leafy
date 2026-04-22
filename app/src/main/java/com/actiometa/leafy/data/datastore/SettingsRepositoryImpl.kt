@@ -25,6 +25,7 @@ class SettingsRepositoryImpl @Inject constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val WEATHER_ALERTS_ENABLED = booleanPreferencesKey("weather_alerts_enabled")
         val USER_CITY_LOCATION = stringPreferencesKey("user_city_location")
+        val APP_LANGUAGE = stringPreferencesKey("app_language")
     }
 
     override val plantNetApiKey: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.PLANT_NET_KEY] }
@@ -33,6 +34,9 @@ class SettingsRepositoryImpl @Inject constructor(
     override val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.ONBOARDING_COMPLETED] ?: false }
     override val isWeatherAlertsEnabled: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.WEATHER_ALERTS_ENABLED] ?: false }
     override val userCityLocation: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.USER_CITY_LOCATION] }
+    override val appLanguage: Flow<String> = context.dataStore.data.map { 
+        it[PreferencesKeys.APP_LANGUAGE] ?: java.util.Locale.getDefault().language 
+    }
 
     override suspend fun savePlantNetKey(key: String) {
         context.dataStore.edit { it[PreferencesKeys.PLANT_NET_KEY] = key }
@@ -59,5 +63,9 @@ class SettingsRepositoryImpl @Inject constructor(
                 it.remove(PreferencesKeys.USER_CITY_LOCATION)
             }
         }
+    }
+
+    override suspend fun saveLanguage(languageCode: String) {
+        context.dataStore.edit { it[PreferencesKeys.APP_LANGUAGE] = languageCode }
     }
 }

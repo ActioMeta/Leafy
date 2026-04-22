@@ -16,6 +16,7 @@ import javax.inject.Inject
 data class SettingsUiState(
     val isWeatherEnabled: Boolean = false,
     val cityLocation: String = "",
+    val language: String = "en",
     val isLoading: Boolean = false,
     val message: String? = null
 )
@@ -37,9 +38,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val isEnabled = settingsRepository.isWeatherAlertsEnabled.first()
             val city = settingsRepository.userCityLocation.first() ?: ""
+            val lang = settingsRepository.appLanguage.first()
             _uiState.value = _uiState.value.copy(
                 isWeatherEnabled = isEnabled,
-                cityLocation = city
+                cityLocation = city,
+                language = lang
             )
         }
     }
@@ -55,6 +58,13 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(cityLocation = city)
         viewModelScope.launch {
             settingsRepository.setWeatherPreferences(_uiState.value.isWeatherEnabled, city)
+        }
+    }
+
+    fun updateLanguage(lang: String) {
+        _uiState.value = _uiState.value.copy(language = lang)
+        viewModelScope.launch {
+            settingsRepository.saveLanguage(lang)
         }
     }
 

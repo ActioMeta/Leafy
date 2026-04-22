@@ -2,6 +2,7 @@ package com.actiometa.leafy.data.repository
 
 import android.util.Log
 import com.actiometa.leafy.data.remote.api.BotanyApi
+import com.actiometa.leafy.data.remote.api.TrefleBasicInfoDto
 import com.actiometa.leafy.domain.model.IdentificationResult
 import com.actiometa.leafy.domain.model.PlantDetails
 import com.actiometa.leafy.domain.repository.BotanyRepository
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.first
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -21,13 +21,13 @@ class BotanyRepositoryImpl @Inject constructor(
 
     companion object {
         private const val TAG = "BotanyRepository"
-        private const val PERENUAL_BASE_URL = "https://perenual.com/api/v2"
+        private const val PLANTNET_BASE_URL = "https://my-api.plantnet.org/v2/"
     }
 
     override suspend fun validatePlantNetKey(apiKey: String): Result<Boolean> = runCatching {
         val cleanKey = apiKey.trim()
         try {
-            botanyApi.listProjects(cleanKey)
+            botanyApi.listProjects("${PLANTNET_BASE_URL}projects", cleanKey)
             true
         } catch (e: Exception) {
             Log.e(TAG, "PlantNet validation failed: ${e.message}", e)
@@ -38,14 +38,10 @@ class BotanyRepositoryImpl @Inject constructor(
     override suspend fun validatePerenualKey(apiKey: String): Result<Boolean> = runCatching {
         val cleanKey = apiKey.trim()
         try {
-            botanyApi.searchSpecies(
-                url = "$PERENUAL_BASE_URL/species-list",
-                scientificName = "Rosa",
-                apiKey = cleanKey
-            )
+            botanyApi.searchTrefleSpecies(query = "Rosa", apiKey = cleanKey)
             true
         } catch (e: Exception) {
-            Log.e(TAG, "Perenual validation failed: ${e.message}", e)
+            Log.e(TAG, "Trefle validation failed: ${e.message}", e)
             throw e
         }
     }
@@ -57,6 +53,8 @@ class BotanyRepositoryImpl @Inject constructor(
     ): Result<List<IdentificationResult>> = runCatching {
         val apiKey = settingsRepository.plantNetApiKey.first()
             ?: throw Exception("Pl@ntNet API Key not found")
+        
+        val lang = settingsRepository.appLanguage.first()
 
         val imagePart = MultipartBody.Part.createFormData(
             "images",
@@ -66,11 +64,13 @@ class BotanyRepositoryImpl @Inject constructor(
         val organBody = MultipartBody.Part.createFormData("organs", organ)
 
         val response = botanyApi.identifyPlant(
-            project = project,
+            url = "${PLANTNET_BASE_URL}identify/$project",
             apiKey = apiKey,
+            lang = lang,
             images = listOf(imagePart),
             organs = listOf(organBody)
         )
+        Log.d(TAG, "PlantNet identify response: $response")
 
         response.results.map {
             IdentificationResult(
@@ -82,81 +82,127 @@ class BotanyRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPlantDetails(scientificName: String): Result<PlantDetails> {
-        // Para compatibilidad con la interfaz, llamamos a la nueva función con null en commonName
         return getPlantDetailsExtended(scientificName, null)
     }
 
     override suspend fun getPlantDetailsExtended(scientificName: String, commonName: String?): Result<PlantDetails> = runCatching {
-        val apiKey = settingsRepository.perenualApiKey.first()
-            ?: throw Exception("Perenual API Key not found")
+        val apiKey = settingsRepository.perenualApiKey.first() 
+            ?: throw Exception("Trefle API Key not found")
 
-        // Intento 1: Nombre Científico
-        var searchResponse = botanyApi.searchSpecies(
-            url = "$PERENUAL_BASE_URL/species-list",
-            scientificName = scientificName.trim(),
-            apiKey = apiKey
-        )
-        var speciesBasicInfo = searchResponse.data.firstOrNull()
+        val cleanName = scientificName.replace(Regex("\\s+(spp\\.|subsp\\.|var\\.|f\\.).*"), "").trim()
+        Log.d(TAG, "Starting Trefle search: Scientific=$scientificName, Clean=$cleanName, Common=$commonName")
 
-        // Intento 2: Nombre Común (si el científico falló)
-        if (speciesBasicInfo == null && !commonName.isNullOrBlank()) {
-            searchResponse = botanyApi.searchSpecies(
-                url = "$PERENUAL_BASE_URL/species-list",
-                scientificName = commonName.trim(),
-                apiKey = apiKey
-            )
-            speciesBasicInfo = searchResponse.data.firstOrNull()
+        var basicInfo: TrefleBasicInfoDto? = null
+
+        // 1. Search by Common Name (User Priority)
+        if (!commonName.isNullOrBlank()) {
+            try {
+                val response = botanyApi.searchTrefleSpecies(query = commonName, apiKey = apiKey)
+                basicInfo = response.data.firstOrNull()
+            } catch (e: Exception) {
+                Log.e(TAG, "Trefle search by Common Name failed: ${e.message}")
+            }
         }
 
-        // Intento 3: Género
-        if (speciesBasicInfo == null && scientificName.contains(" ")) {
-            val genus = scientificName.split(" ").first()
-            searchResponse = botanyApi.searchSpecies(
-                url = "$PERENUAL_BASE_URL/species-list",
-                scientificName = genus,
-                apiKey = apiKey
-            )
-            speciesBasicInfo = searchResponse.data.firstOrNull()
+        // 2. Search by Scientific Name
+        if (basicInfo == null) {
+            try {
+                val response = botanyApi.searchTrefleSpecies(query = cleanName, apiKey = apiKey)
+                basicInfo = response.data.firstOrNull()
+            } catch (e: Exception) {
+                Log.e(TAG, "Trefle search by Scientific Name failed: ${e.message}")
+            }
         }
 
-        if (speciesBasicInfo == null) throw Exception("Species not found in Perenual")
-
-        // Obtener detalles completos (intentar, pero con fallback a la info básica)
-        val details = try {
-            botanyApi.getSpeciesDetails(
-                url = "$PERENUAL_BASE_URL/species/details/${speciesBasicInfo.id}",
-                apiKey = apiKey
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching Perenual details for ID ${speciesBasicInfo.id}: ${e.message}")
-            null
+        // 3. Genus Fallback
+        if (basicInfo == null && cleanName.contains(" ")) {
+            val genus = cleanName.split(" ").first()
+            try {
+                val response = botanyApi.searchTrefleSpecies(query = genus, apiKey = apiKey)
+                basicInfo = response.data.firstOrNull()
+            } catch (e: Exception) {
+                Log.e(TAG, "Trefle search by Genus failed: ${e.message}")
+            }
         }
 
-        val estimatedWatering = when (details?.watering?.lowercase()) {
-            "frequent" -> 3
-            "average" -> 7
-            "minimum" -> 14
-            "none" -> 30
-            else -> 7
+        if (basicInfo == null) throw Exception("Species not found in Trefle")
+
+        val detailsResponse = botanyApi.getTrefleDetails(id = basicInfo.id, apiKey = apiKey)
+        Log.d(TAG, "Trefle details response: $detailsResponse")
+        
+        val data = detailsResponse.data
+        var mainSpecies = data.mainSpecies
+        var growth = mainSpecies?.growth
+        var specs = mainSpecies?.specifications
+
+        // Genus Fallback for missing data
+        if (growth?.light == null && data.genus?.name != null) {
+            try {
+                val genusSearch = botanyApi.searchTrefleSpecies(query = data.genus.name, apiKey = apiKey)
+                val genusInfo = genusSearch.data.firstOrNull()
+                if (genusInfo != null && genusInfo.id != basicInfo.id) {
+                    val genusDetails = botanyApi.getTrefleDetails(id = genusInfo.id, apiKey = apiKey)
+                    if (genusDetails.data.mainSpecies?.growth?.light != null) {
+                        growth = genusDetails.data.mainSpecies.growth
+                        specs = genusDetails.data.mainSpecies.specifications
+                    }
+                }
+            } catch (e: Exception) { /* ignore */ }
         }
+
+        // Mapping logic
+        val minPrec = growth?.minPrecipitation?.mm ?: 500f
+        val wateringDays = when {
+            minPrec > 1500 -> 3
+            minPrec > 800 -> 7
+            minPrec > 300 -> 14
+            else -> 21
+        }
+
+        val lightLevel = growth?.light ?: 5
+        val sunlight = when {
+            lightLevel >= 8 -> "Full Sun"
+            lightLevel >= 5 -> "Partial Shade"
+            else -> "Full Shade"
+        }
+
+        val toxicity = specs?.toxicity?.lowercase()
+        val isPoisonous = when {
+            toxicity == null -> null
+            toxicity.contains("none") -> false
+            else -> true
+        }
+
+        val phRange = if (growth?.phMin != null && growth.phMax != null) "${growth.phMin} - ${growth.phMax}" else null
+        val tempRange = if (growth?.minTemp?.degC != null && growth.maxTemp?.degC != null) "${growth.minTemp.degC}°C - ${growth.maxTemp.degC}°C" else null
+        val heightMeters = specs?.averageHeight?.cm?.let { "%.1f m".format(it / 100f) }
 
         PlantDetails(
-            speciesId = speciesBasicInfo.id.toString(),
-            scientificName = scientificName,
-            commonName = details?.commonName?.ifBlank { null } ?: speciesBasicInfo.commonName ?: scientificName,
-            wateringFrequencyDays = details?.wateringBenchmark?.value?.toIntOrNull() ?: estimatedWatering,
-            sunlight = details?.sunlight?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Unknown" } ?: "Unknown",
-            cycle = details?.cycle?.ifBlank { "Unknown" } ?: "Unknown",
-            maintenance = details?.maintenance?.ifBlank { null } ?: details?.careLevel?.ifBlank { "Unknown" } ?: "Unknown",
-            growthRate = details?.growthRate?.ifBlank { "Unknown" } ?: "Unknown",
-            description = details?.description?.ifBlank { null },
-            edible = details?.edible ?: false,
-            propagation = details?.propagation?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Not specified" } ?: "Not specified",
-            pruningMonths = details?.pruningMonth?.filter { it.isNotBlank() }?.joinToString(", ")?.ifBlank { "Not specified" } ?: "Not specified",
-            isPoisonousToHumans = (details?.poisonousToHumans ?: 0) > 0,
-            isPoisonousToPets = (details?.poisonousToPets ?: 0) > 0,
-            isIndoor = (details?.indoor ?: 0) > 0,
-            imagePath = details?.defaultImage?.regularUrl ?: speciesBasicInfo.defaultImage?.regularUrl
+            speciesId = data.id.toString(),
+            scientificName = data.scientificName,
+            commonName = commonName ?: data.commonName ?: data.scientificName,
+            wateringFrequencyDays = wateringDays,
+            sunlight = sunlight,
+            imagePath = data.imageUrl ?: basicInfo.imageUrl,
+            cycle = mainSpecies?.duration?.joinToString(", "),
+            maintenance = growth?.growthRate,
+            growthRate = growth?.growthRate,
+            edible = mainSpecies?.edible,
+            isPoisonous = isPoisonous,
+            isIndoor = null,
+            family = data.family?.name ?: basicInfo.family,
+            genus = data.genus?.name ?: basicInfo.genus,
+            year = data.year,
+            author = data.author,
+            status = data.status,
+            rank = data.rank,
+            growthHabit = specs?.growthHabit,
+            phRange = phRange,
+            tempRange = tempRange,
+            avgHeight = heightMeters,
+            lightLevel = growth?.light,
+            atmosphericHumidity = growth?.atmosphericHumidity,
+            minPrecipitation = growth?.minPrecipitation?.mm
         )
     }
 }

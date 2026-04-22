@@ -51,7 +51,7 @@ object NetworkModule {
     fun provideBotanyRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
-            .baseUrl("https://my-api.plantnet.org/v2/") // Base por defecto, se ajustará en el repo para Perenual si es necesario o se usarán URLs completas
+            .baseUrl("https://trefle.io/api/v1/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

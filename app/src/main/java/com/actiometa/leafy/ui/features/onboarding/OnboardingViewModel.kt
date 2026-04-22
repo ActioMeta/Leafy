@@ -63,10 +63,10 @@ class OnboardingViewModel @Inject constructor(
                 return@launch
             }
 
-            // 2. Validate Perenual
+            // 2. Validate Trefle
             val perenualResult = botanyRepository.validatePerenualKey(currentState.perenualKey)
             if (perenualResult.isFailure) {
-                _uiState.update { it.copy(isSaving = false, error = "Invalid Perenual API Key") }
+                _uiState.update { it.copy(isSaving = false, error = "Invalid Trefle.io API Key") }
                 return@launch
             }
 

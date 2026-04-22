@@ -122,6 +122,41 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Language Selection Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        stringResource(R.string.language_title),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        stringResource(R.string.language_desc),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    
+                    val languages = listOf("en" to "English", "es" to "Español")
+                    val selectedIndex = languages.indexOfFirst { it.first == uiState.language }.coerceAtLeast(0)
+                    
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                        languages.forEachIndexed { index, (code, label) ->
+                            SegmentedButton(
+                                selected = index == selectedIndex,
+                                onClick = { viewModel.updateLanguage(code) },
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = languages.size)
+                            ) {
+                                Text(label)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

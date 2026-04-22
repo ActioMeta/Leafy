@@ -104,6 +104,9 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // Permissions
+    implementation(libs.accompanist.permissions)
+
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 

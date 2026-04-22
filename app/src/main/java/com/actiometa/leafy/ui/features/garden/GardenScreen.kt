@@ -40,7 +40,7 @@ fun GardenScreen(
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.my_garden), fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {

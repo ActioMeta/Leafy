@@ -6,7 +6,7 @@
     <string name="onboarding_subtitle">Configura tu espacio para empezar a cuidar tus plantas.</string>
     <string name="setup_api_keys">Configuración de API Keys</string>
     <string name="plantnet_key_label">API Key de Pl@ntNet</string>
-    <string name="perenual_key_label">API Key de Perenual</string>
+    <string name="perenual_key_label">API Key de Trefle.io</string>
     <string name="openweather_key_label">API Key de OpenWeather</string>
     <string name="save_and_continue">Guardar y Continuar</string>
     <string name="skip_onboarding">Omitir</string>
@@ -80,10 +80,16 @@
     <string name="loading">Cargando...</string>
     <string name="error_occurred">Ha ocurrido un error</string>
     <string name="invalid_plantnet_key">API Key de Pl@ntNet inválida</string>
-    <string name="invalid_perenual_key">API Key de Perenual inválida</string>
+    <string name="invalid_perenual_key">API Key de Trefle.io inválida</string>
     <string name="invalid_openweather_key">API Key de OpenWeather inválida</string>
     <string name="validating_keys">Validando llaves...</string>
     <string name="back">Atrás</string>
+    <string name="plant_gallery">Línea de Tiempo</string>
+    <string name="history_photos">Historial de Fotos</string>
+    <string name="compare_growth">Comparar Crecimiento</string>
+    <string name="before">Antes</string>
+    <string name="after">Después</string>
+    <string name="no_images_yet">No hay imágenes registradas para esta planta.</string>
 
     <!-- Settings & Weather Config -->
     <string name="settings">Ajustes</string>
@@ -96,6 +102,9 @@
     <string name="use_gps_btn">Usar Mi Ubicación Actual (GPS)</string>
     <string name="gps_not_available">Ubicación GPS no disponible</string>
     <string name="location_saved">Ajustes de ubicación guardados</string>
+
+    <string name="language_title">Idioma de la App</string>
+    <string name="language_desc">Selecciona tu idioma preferido para la identificación e información de plantas.</string>
 
     <!-- Notifications -->
     <string name="notification_channel_name">Alertas Climáticas</string>

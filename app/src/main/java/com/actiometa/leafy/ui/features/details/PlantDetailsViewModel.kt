@@ -22,6 +22,7 @@ data class PlantDetailsUiState(
     val error: String? = null
 )
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 @HiltViewModel
 class PlantDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -42,7 +43,6 @@ class PlantDetailsViewModel @Inject constructor(
 
     private fun loadPlantDetails() {
         viewModelScope.launch {
-            // Buscamos la planta y combinamos con su último riego
             gardenRepository.getGardenPlants().flatMapLatest { plantList ->
                 val relation = plantList.find { it.plant.plantId == plantId }
                 if (relation == null) return@flatMapLatest flowOf(null)
@@ -72,9 +72,21 @@ class PlantDetailsViewModel @Inject constructor(
                         edible = species?.edible,
                         propagation = species?.propagation,
                         pruningMonths = species?.pruningMonths,
-                        isPoisonousToHumans = species?.isPoisonousToHumans ?: false,
-                        isPoisonousToPets = species?.isPoisonousToPets ?: false,
-                        isIndoor = species?.isIndoor ?: false
+                        isPoisonous = species?.isPoisonous,
+                        isIndoor = species?.isIndoor,
+                        family = species?.family,
+                        genus = species?.genus,
+                        year = species?.year,
+                        author = species?.author,
+                        status = species?.status,
+                        rank = species?.rank,
+                        growthHabit = species?.growthHabit,
+                        phRange = species?.phRange,
+                        tempRange = species?.tempRange,
+                        avgHeight = species?.avgHeight,
+                        lightLevel = species?.lightLevel,
+                        atmosphericHumidity = species?.atmosphericHumidity,
+                        minPrecipitation = species?.minPrecipitation
                     )
                 }
             }.filterNotNull()

@@ -13,8 +13,11 @@ sealed interface Screen {
     data class PlantDetails(val plantId: Int) : Screen
 
     @Serializable
-    object Scanner : Screen
+    data class Scanner(val plantId: Int? = null) : Screen
 
     @Serializable
     object Settings : Screen
+
+    @Serializable
+    data class Gallery(val plantId: Int) : Screen
 }

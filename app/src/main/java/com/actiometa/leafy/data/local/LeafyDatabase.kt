@@ -16,7 +16,7 @@ import com.actiometa.leafy.data.local.entities.SpeciesEntity
         PlantImageEntity::class,
         CareLogEntity::class
     ],
-    version = 3,
+    version = 6,
     exportSchema = false
 )
 abstract class LeafyDatabase : RoomDatabase() {

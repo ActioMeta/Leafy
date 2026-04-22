@@ -1,14 +1,10 @@
-### Configuración de Variables
+# Leafy API Testing
 @plantnet_key = 2b10RaCBRdhsySoikwmr04
-@perenual_key = sk-LXtc69e651434242116593
+@trefle_token = usr-oC6CJqG06UK4YQIl0OVjCzRt4q6UrLyTkopT4rbDAuU
+@weather_key = 59dfb7d8d479147e4369a037618227b9
 
-### 1. Pl@ntNet: Listar Proyectos (Validación)
-GET https://my-api.plantnet.org/v2/projects?api-key={{plantnet_key}}
-
-### 2. Pl@ntNet: Identificar Planta
-# Nota: Para probar identificación real en REST Client necesitas enviar un Multipart
-# Este es un ejemplo de la estructura
-POST https://my-api.plantnet.org/v2/identify/all?api-key={{plantnet_key}}
+### 1. PlantNet: Identificar Planta (POST Multipart)
+POST https://my-api.plantnet.org/v2/identify/all?api-key={{plantnet_key}}&lang=es
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -16,15 +12,29 @@ Content-Disposition: form-data; name="organs"
 
 leaf
 --boundary
-Content-Disposition: form-data; name="images"; filename="planta.jpg"
+Content-Disposition: form-data; name="images"; filename="plant.jpg"
 Content-Type: image/jpeg
 
-< ./ruta/a/tu/imagen.jpg
+< ./52370427473_b8e914065a_b.jpg
 --boundary--
 
-### 3. Perenual: Buscar Especie por Nombre
-GET https://perenual.com/api/v2/species-list?key={{perenual_key}}&q=Rosa
+### 2. Trefle: Búsqueda FALLIDA (Nombre sucio como venía de PlantNet)
+# Esta búsqueda devolvía una lista vacía, causando los datos "Unknown"
+GET https://trefle.io/api/v1/plants/search?token={{trefle_token}}&q=Hydrangea%20spp.
 
-### 4. Perenual: Obtener Detalles de Especie
-# Reemplaza {id} con el ID obtenido en la búsqueda anterior
-GET https://perenual.com/api/v2/species/details/1?key={{perenual_key}}
+### 3. Trefle: Búsqueda EXITOSA (Nueva lógica de Género / Nombre Limpio)
+# Esto es lo que la App hace ahora automáticamente al limpiar el nombre
+GET https://trefle.io/api/v1/plants/search?token={{trefle_token}}&q=Hydrangea
+
+### 4. Trefle: Búsqueda por Nombre Científico Específico
+GET https://trefle.io/api/v1/plants/search?token={{trefle_token}}&q=Hydrangea%20macrophylla
+
+### 5. Trefle: Obtener Detalles completos de Especie por ID
+# Se usa el id obtenido de la búsqueda (ej: 141386)
+GET https://trefle.io/api/v1/plants/141386?token={{trefle_token}}
+
+### 6. Weather: Obtener Clima Actual por Ciudad
+GET https://api.openweathermap.org/data/2.5/weather?q=London,uk&appid={{weather_key}}&units=metric
+
+### 7. Weather: Pronóstico (5 días / 3 horas)
+GET https://api.openweathermap.org/data/2.5/forecast?q=London,uk&appid={{weather_key}}&units=metric

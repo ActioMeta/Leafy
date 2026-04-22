@@ -21,14 +21,28 @@ data class GardenPlant(
     val maintenance: String? = null,
     val growthRate: String? = null,
     val description: String? = null,
-    val edible: Boolean? = false,
+    val edible: Boolean? = null,
     val propagation: String? = null,
     val pruningMonths: String? = null,
-    val isPoisonousToHumans: Boolean = false,
-    val isPoisonousToPets: Boolean = false,
-    val isIndoor: Boolean = false
+    val isPoisonous: Boolean? = null,
+    val isIndoor: Boolean? = null,
+    // Trefle Specific
+    val family: String? = null,
+    val genus: String? = null,
+    val year: Int? = null,
+    val author: String? = null,
+    val status: String? = null,
+    val rank: String? = null,
+    val growthHabit: String? = null,
+    val phRange: String? = null,
+    val tempRange: String? = null,
+    val avgHeight: String? = null,
+    val lightLevel: Int? = null,
+    val atmosphericHumidity: Int? = null,
+    val minPrecipitation: Float? = null
 )
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 class GetGardenWithStatusUseCase @Inject constructor(
     private val gardenRepository: GardenRepository
 ) {
@@ -60,9 +74,21 @@ class GetGardenWithStatusUseCase @Inject constructor(
                         edible = species?.edible,
                         propagation = species?.propagation,
                         pruningMonths = species?.pruningMonths,
-                        isPoisonousToHumans = species?.isPoisonousToHumans ?: false,
-                        isPoisonousToPets = species?.isPoisonousToPets ?: false,
-                        isIndoor = species?.isIndoor ?: false
+                        isPoisonous = species?.isPoisonous,
+                        isIndoor = species?.isIndoor,
+                        family = species?.family,
+                        genus = species?.genus,
+                        year = species?.year,
+                        author = species?.author,
+                        status = species?.status,
+                        rank = species?.rank,
+                        growthHabit = species?.growthHabit,
+                        phRange = species?.phRange,
+                        tempRange = species?.tempRange,
+                        avgHeight = species?.avgHeight,
+                        lightLevel = species?.lightLevel,
+                        atmosphericHumidity = species?.atmosphericHumidity,
+                        minPrecipitation = species?.minPrecipitation
                     )
                 }
             }

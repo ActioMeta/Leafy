@@ -23,13 +23,26 @@ class AddPlantToGardenUseCase @Inject constructor(
             edible = details.edible,
             propagation = details.propagation,
             pruningMonths = details.pruningMonths,
-            isPoisonousToHumans = details.isPoisonousToHumans,
-            isPoisonousToPets = details.isPoisonousToPets,
-            isIndoor = details.isIndoor
+            isPoisonous = details.isPoisonous,
+            isIndoor = details.isIndoor,
+            // Trefle Specific
+            family = details.family,
+            genus = details.genus,
+            year = details.year,
+            author = details.author,
+            status = details.status,
+            rank = details.rank,
+            growthHabit = details.growthHabit,
+            phRange = details.phRange,
+            tempRange = details.tempRange,
+            avgHeight = details.avgHeight,
+            lightLevel = details.lightLevel,
+            atmosphericHumidity = details.atmosphericHumidity,
+            minPrecipitation = details.minPrecipitation
         )
 
         val plantEntity = PlantEntity(
-            plantId = 0, // 0 triggers autogenerate in Room
+            plantId = 0,
             speciesId = details.speciesId,
             nickname = nickname,
             imagePath = details.imagePath,

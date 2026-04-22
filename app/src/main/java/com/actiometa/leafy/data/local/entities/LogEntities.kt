@@ -9,8 +9,9 @@ import kotlinx.serialization.Serializable
 data class PlantImageEntity(
     @PrimaryKey(autoGenerate = true) val imageId: Int = 0,
     val plantId: Int,
-    val imageUri: String,
-    val timestamp: Long
+    val imagePath: String,
+    val timestamp: Long,
+    val caption: String? = null
 )
 
 @Serializable

@@ -19,12 +19,25 @@ data class PlantDetails(
     val maintenance: String? = "Unknown",
     val growthRate: String? = "Unknown",
     val description: String? = null,
-    val edible: Boolean? = false,
+    val edible: Boolean? = null,
     val propagation: String? = "Not specified",
     val pruningMonths: String? = "Not specified",
-    val isPoisonousToHumans: Boolean = false,
-    val isPoisonousToPets: Boolean = false,
-    val isIndoor: Boolean = false
+    val isPoisonous: Boolean? = null, // Merged toxicity
+    val isIndoor: Boolean? = null,
+    // Trefle Specific Fields
+    val family: String? = null,
+    val genus: String? = null,
+    val year: Int? = null,
+    val author: String? = null,
+    val status: String? = null,
+    val rank: String? = null,
+    val growthHabit: String? = null,
+    val phRange: String? = null,
+    val tempRange: String? = null,
+    val avgHeight: String? = null,
+    val lightLevel: Int? = null,
+    val atmosphericHumidity: Int? = null,
+    val minPrecipitation: Float? = null
 )
 
 data class WeatherForecast(

@@ -1,5 +1,6 @@
 package com.actiometa.leafy.ui.features.details
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,191 +21,116 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.actiometa.leafy.R
+import com.actiometa.leafy.domain.usecase.GardenPlant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
 fun PlantDetailsScreen(
     viewModel: PlantDetailsViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToGallery: (Int) -> Unit,
+    onNavigateToMonitor: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier.background(Color.Black.copy(alpha = 0.3f), CircleShape)
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        }
-    ) { padding ->
-        val plant = uiState.plant
-
-        if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (plant != null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-            ) {
-                // Header Image
-                Box(modifier = Modifier.height(350.dp).fillMaxWidth()) {
-                    AsyncImage(
-                        model = plant.imagePath,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                uiState.error != null -> {
+                    Text(
+                        text = uiState.error ?: stringResource(R.string.error_occurred),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
                     )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
+                }
+                uiState.plant != null -> {
+                    val plant = uiState.plant!!
+                    
+                    Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+                        // Header Header
+                        Box(modifier = Modifier.fillMaxWidth().height(360.dp)) {
+                            AsyncImage(
+                                model = plant.imagePath,
+                                contentDescription = plant.commonName,
+                                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            
+                            Box(modifier = Modifier.fillMaxSize().background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
                                     startY = 500f
                                 )
-                            )
-                    )
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(24.dp)
-                    ) {
-                        Text(
-                            text = plant.nickname,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = plant.scientificName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                        )
-                    }
-                }
+                            ))
 
-                // Info Content
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp)
-                        .padding(bottom = 32.dp)
-                ) {
-                    // Quick Stats Chips
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        plant.cycle?.let { AttributeChip(it, Icons.Default.History) }
-                        plant.maintenance?.let { AttributeChip(it, Icons.Default.Build) }
-                        if (plant.isIndoor) AttributeChip(stringResource(R.string.indoor_label), Icons.Default.Home)
-                        if (plant.edible == true) AttributeChip("Edible", Icons.Default.Restaurant)
-                    }
+                            // Buttons Overlay
+                            Row(
+                                modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FloatingActionButton(
+                                    onClick = onNavigateBack,
+                                    containerColor = Color.Black.copy(alpha = 0.4f),
+                                    contentColor = Color.White,
+                                    shape = CircleShape,
+                                    modifier = Modifier.size(48.dp),
+                                    elevation = FloatingActionButtonDefaults.elevation(0.dp)
+                                ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Care Summary Card
-                    CareStatusCard(uiState)
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Description Section
-                    if (!plant.description.isNullOrBlank()) {
-                        SectionHeader(stringResource(R.string.plant_info))
-                        Text(
-                            text = plant.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Justify,
-                            lineHeight = 22.sp
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
-
-                    // Requirements Grid
-                    SectionHeader("Requirements")
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            InfoRow(Icons.Default.WaterDrop, stringResource(R.string.watering_label), stringResource(R.string.watering_every_days, plant.wateringFrequencyDays))
-                            InfoRow(Icons.Default.WbSunny, stringResource(R.string.sunlight_label), plant.sunlight)
-                            plant.growthRate?.let { InfoRow(Icons.Default.Speed, stringResource(R.string.growth_rate_label), it) }
-                            plant.cycle?.let { InfoRow(Icons.Default.Autorenew, stringResource(R.string.cycle_label), it) }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Specific Care (Propagation & Pruning)
-                    if (!plant.propagation.isNullOrBlank() || !plant.pruningMonths.isNullOrBlank()) {
-                        SectionHeader("Care Specifics")
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            if (!plant.propagation.isNullOrBlank()) {
-                                CareDetailCard(Modifier.weight(1f), stringResource(R.string.propagation_label), plant.propagation, Icons.Default.Category)
+                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    FloatingActionButton(
+                                        onClick = { onNavigateToMonitor(plant.plantId) },
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        shape = RoundedCornerShape(16.dp),
+                                        modifier = Modifier.size(48.dp)
+                                    ) { Icon(Icons.Default.CameraAlt, "Monitor") }
+                                    
+                                    FloatingActionButton(
+                                        onClick = { onNavigateToGallery(plant.plantId) },
+                                        containerColor = Color.Black.copy(alpha = 0.4f),
+                                        contentColor = Color.White,
+                                        shape = CircleShape,
+                                        modifier = Modifier.size(48.dp),
+                                        elevation = FloatingActionButtonDefaults.elevation(0.dp)
+                                    ) { Icon(Icons.Default.PhotoLibrary, "Gallery") }
+                                }
                             }
-                            if (!plant.pruningMonths.isNullOrBlank()) {
-                                CareDetailCard(Modifier.weight(1f), stringResource(R.string.pruning_label), plant.pruningMonths, Icons.Default.ContentCut)
+
+                            // Title Overlay
+                            Column(modifier = Modifier.align(Alignment.BottomStart).padding(24.dp)) {
+                                Text(text = plant.commonName, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold, color = Color.White)
+                                Text(text = "${plant.scientificName} ${plant.author ?: ""}", style = MaterialTheme.typography.titleMedium, color = Color.White.copy(alpha = 0.8f), fontStyle = FontStyle.Italic)
                             }
                         }
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
 
-                    // Safety Section
-                    SectionHeader(stringResource(R.string.poisonous_label))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SafetyCard(
-                            Modifier.weight(1f), 
-                            stringResource(R.string.pets_label), 
-                            plant.isPoisonousToPets, 
-                            Icons.Default.Pets
-                        )
-                        SafetyCard(
-                            Modifier.weight(1f), 
-                            stringResource(R.string.humans_label), 
-                            plant.isPoisonousToHumans, 
-                            Icons.Default.Person
-                        )
-                    }
+                        // Content
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            // Botanical Specs
+                            BotanicalSpecsCard(plant)
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                            Spacer(Modifier.height(16.dp))
 
-                    Button(
-                        onClick = { viewModel.waterPlant() },
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (plant.isNeedsWater) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                        ),
-                        enabled = plant.isNeedsWater
-                    ) {
-                        Icon(Icons.Default.WaterDrop, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            if (plant.isNeedsWater) stringResource(R.string.register_watering_btn) 
-                            else stringResource(R.string.already_watered)
-                        )
+                            // Environmental Needs
+                            EnvironmentalLimitsCard(plant)
+
+                            Spacer(Modifier.height(16.dp))
+
+                            // Safety Section (Merged Toxic)
+                            SafetyCard(plant)
+
+                            Spacer(Modifier.height(32.dp))
+                        }
                     }
                 }
             }
@@ -212,137 +139,126 @@ fun PlantDetailsScreen(
 }
 
 @Composable
-fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 12.dp)
-    )
-}
-
-@Composable
-fun CareDetailCard(modifier: Modifier, label: String, value: String, icon: ImageVector) {
+fun BotanicalSpecsCard(plant: GardenPlant) {
     Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.height(8.dp))
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
-            Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-fun SafetyCard(modifier: Modifier, label: String, isPoisonous: Boolean, icon: ImageVector) {
-    val color = if (isPoisonous) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = color.copy(alpha = 0.1f)
-        )
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, null, modifier = Modifier.size(24.dp), tint = color)
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(label, style = MaterialTheme.typography.labelSmall)
-                Text(
-                    if (isPoisonous) stringResource(R.string.yes) else stringResource(R.string.no),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = color
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AttributeChip(text: String, icon: ImageVector) {
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.secondary)
-            Spacer(Modifier.width(4.dp))
-            Text(text, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-fun CareStatusCard(uiState: PlantDetailsUiState) {
-    val weather = uiState.weather
-    val plant = uiState.plant ?: return
-
-    Card(
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (plant.isNeedsWater) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f) 
-                            else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-        ),
-        modifier = Modifier.fillMaxWidth()
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
     ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(if (plant.isNeedsWater) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (plant.isNeedsWater) Icons.Default.WaterDrop else Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Detailed Specifications", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            HorizontalDivider(Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+            
+            Row(Modifier.fillMaxWidth()) {
+                SmallInfoColumn("Family", plant.family ?: "N/A", Modifier.weight(1f))
+                SmallInfoColumn("Genus", plant.genus ?: "N/A", Modifier.weight(1f))
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                val statusTitle = if (plant.isNeedsWater) stringResource(R.string.status_needs_water) else stringResource(R.string.status_hydrated)
-                val statusDesc = if (plant.isNeedsWater) stringResource(R.string.desc_needs_water) else stringResource(R.string.desc_hydrated)
-                
-                Text(
-                    text = if (weather?.shouldPauseWatering == true) stringResource(R.string.rain_predicted) else statusTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = if (weather?.shouldPauseWatering == true) stringResource(R.string.watering_paused) else statusDesc,
-                    style = MaterialTheme.typography.bodySmall
-                )
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth()) {
+                SmallInfoColumn("Habit", plant.growthHabit ?: "N/A", Modifier.weight(1f))
+                SmallInfoColumn("Growth", plant.growthRate ?: "N/A", Modifier.weight(1f))
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth()) {
+                SmallInfoColumn("Rank", plant.rank?.uppercase() ?: "N/A", Modifier.weight(1f))
+                SmallInfoColumn("Year", plant.year?.toString() ?: "N/A", Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-fun InfoRow(icon: ImageVector, label: String, value: String) {
-    Row(
-        modifier = Modifier.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+fun EnvironmentalLimitsCard(plant: GardenPlant) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f))
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Growth Environment", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            HorizontalDivider(Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+            
+            MetricRow("Soil pH Range", plant.phRange ?: "N/A", Icons.Default.Science)
+            MetricRow("Temp. Range", plant.tempRange ?: "N/A", Icons.Default.Thermostat)
+            MetricRow("Atm. Humidity", plant.atmosphericHumidity?.let { "$it/10" } ?: "N/A", Icons.Default.WaterDrop)
+            MetricRow("Light Intensity", plant.lightLevel?.let { "$it/10" } ?: "N/A", Icons.Default.WbSunny)
+            MetricRow("Min. Precipitation", plant.minPrecipitation?.let { "${it.toInt()} mm/y" } ?: "N/A", Icons.Default.CloudQueue)
+            MetricRow("Avg. Height", plant.avgHeight ?: "N/A", Icons.Default.Height)
         }
     }
 }
+
+@Composable
+fun SafetyCard(plant: GardenPlant) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            SafetyIndicator("Edible", plant.edible, Icons.Default.Restaurant)
+            SafetyIndicator("Toxic", plant.isPoisonous, Icons.Default.Warning)
+        }
+    }
+}
+
+@Composable
+fun SmallInfoColumn(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun MetricRow(label: String, value: String, icon: ImageVector) {
+    Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(8.dp))
+        Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun SafetyIndicator(label: String, isTrue: Boolean?, icon: ImageVector) {
+    val tint = when (isTrue) {
+        true -> if (label == "Toxic") Color(0xFFF44336) else Color(0xFF4CAF50)
+        false -> if (label == "Toxic") Color(0xFF4CAF50) else Color(0xFFF44336)
+        null -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    
+    val textValue = when (isTrue) {
+        true -> "Yes"
+        false -> "No"
+        null -> "N/A"
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(icon, null, tint = tint)
+        Text(label, style = MaterialTheme.typography.labelSmall)
+        Text(textValue, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = tint)
+    }
+}
+
+@Composable
+fun InfoSectionCard(title: String, items: List<InfoItem>) {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(12.dp))
+            items.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                    Icon(item.icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(12.dp))
+                    Text(item.label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(item.value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+
+data class InfoItem(val label: String, val value: String, val icon: ImageVector)
